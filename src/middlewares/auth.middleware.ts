@@ -1,18 +1,20 @@
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
+import type { JwtPayload } from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
 import { db } from '../db';
+import type { UserRow } from '../types/user';
 
 const JWT_TOKEN_SECRET = process.env.JWT_TOKEN_SECRET as string;
 
 export interface AuthRequest extends Request {
-  user?: any;
+  user?: JwtPayload;
 }
 
-export  async function authenticate(
+export async function authenticate(
   req: AuthRequest,
   res: Response,
-  next: NextFunction
-) {
+  next: NextFunction,
+): Promise<Response | void> {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
@@ -22,11 +24,11 @@ export  async function authenticate(
   const token = authHeader.split(' ')[1];
 
   try {
-    const decoded: any = jwt.verify(token, JWT_TOKEN_SECRET); 
-    
-    const [rows]: any = await db.execute(
+    const decoded = jwt.verify(token, JWT_TOKEN_SECRET) as JwtPayload;
+
+    const [rows] = await db.execute<UserRow[]>(
       'SELECT * FROM users WHERE id = ? AND access_token = ?',
-      [decoded.id, token]
+      [decoded.id, token],
     );
 
     if (rows.length === 0) {
@@ -35,7 +37,9 @@ export  async function authenticate(
 
     req.user = decoded;
     next();
-  } catch (err) {
-    return res.status(401).json({ message: 'Invalid or expired token' });
+  } catch (err: unknown) {
+    return res
+      .status(401)
+      .json({ message: 'Invalid or expired token', error: err });
   }
 }

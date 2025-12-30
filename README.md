@@ -3,6 +3,7 @@
 A simple Node.js authentication API using TypeScript, Express, JWT, and ESLint/Prettier for code quality.
 
 ## Features
+
 - User authentication with JWT
 - Modular route and middleware structure
 - TypeScript for type safety
@@ -11,24 +12,29 @@ A simple Node.js authentication API using TypeScript, Express, JWT, and ESLint/P
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js (v16+ recommended)
 - npm
 
 ### Installation
+
 ```bash
 npm install
 ```
 
 ### Running the Server
+
 ```bash
 npm run dev
 ```
 
 ### Linting and Formatting
+
 - Lint: `npm run lint`
 - Format: `npm run format`
 
 ## Project Structure
+
 ```
 src/
   db.ts
@@ -42,4 +48,5 @@ src/
 ```
 
 ## License
+
 MIT
